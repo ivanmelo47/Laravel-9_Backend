@@ -30,6 +30,8 @@ return new class extends Migration
         });
     }
 
+    // Hola
+
     /**
      * Reverse the migrations.
      *

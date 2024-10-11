@@ -17,9 +17,12 @@ return new class extends Migration
             $table->id('user_id');
             $table->string('uuid', 100)->unique();
             $table->string('username', 50)->unique();
+            $table->string('url_img', 80);
             $table->string('email', 80)->unique();
             $table->string('password', 100);
-            $table->string('rol', 20)->nullable()->default('user');
+            $table->string('role', 20)->nullable()->default('user');
+            $table->boolean('verificada')->nullable()->default(false);
+            $table->boolean('status')->default(false);
             $table->timestamp('email_verified_at')->nullable();
             $table->rememberToken();
             $table->timestamps();

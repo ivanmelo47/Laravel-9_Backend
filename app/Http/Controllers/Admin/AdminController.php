@@ -13,8 +13,21 @@ class AdminController extends Controller
     {
         // Obtener la cabecera 'Authorization'
         $header = $request->header('Authorization');
+        $role = $request->header('Role');
 
         $usuarios = DB::table('users')->get();
+
+        $user_data = DB::table('personal_data as pd')
+            ->join('users', 'pd.user_id', '=', 'users.user_id') // Join entre pd y users
+            ->select(
+                'pd.name',
+                'users.username',
+                'users.email',
+                'users.uuid as user_uuid',
+                'users.role',
+                'users.url_img'
+            )
+            ->get();
 
         return response()->json([
             'status' => true,
@@ -22,8 +35,7 @@ class AdminController extends Controller
             'code' => 200,
             'message' => 'Usuarios',
             'notifications' => ['Usuarios'],
-            'data' => $usuarios,
-            'header' => $header,
+            'data' => $usuarios
         ], 200);
 
         return ResponseHelper::jsonResponse(true, true, 200, 'Usuarios', ['Usuarios'], $usuarios);

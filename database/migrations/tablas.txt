@@ -1,0 +1,14 @@
+tabla: personal_data
+* personal_data_id
+* uuid
+* user_id
+* nombres
+* apellido_paterno
+* apellido_materno
+* teléfono
+* url_img
+* cumpleanios
+* linkedin
+* especialidad
+* cargo
+* direccion

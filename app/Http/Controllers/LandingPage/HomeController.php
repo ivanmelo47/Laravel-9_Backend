@@ -16,21 +16,19 @@ class HomeController extends Controller
 
         try {
             $user = DB::table('users')
-                ->join('datos_personales', 'users.user_id', '=', 'datos_personales.user_id')
                 ->join('personal_data', 'users.user_id', '=', 'personal_data.user_id')
                 ->join('sobre_mi', 'users.user_id', '=', 'sobre_mi.user_id')
                 ->select(
-                    'datos_personales.url_img',
-                    'datos_personales.cumpleanios',
-                    'datos_personales.telefono',
-                    'datos_personales.email',
-                    'datos_personales.linkedin',
-                    'datos_personales.especialidad',
-                    'datos_personales.direccion',
-                    'datos_personales.cargo',
-                    'personal_data.name',
-                    'personal_data.last_name',
-                    'personal_data.second_last_name',
+                    'personal_data.nombres',
+                    'personal_data.apellido_paterno',
+                    'personal_data.apellido_materno',
+                    'personal_data.telefono',
+                    'personal_data.url_img',
+                    'personal_data.cumpleanios',
+                    'personal_data.linkedin',
+                    'personal_data.especialidad',
+                    'personal_data.cargo',
+                    'personal_data.direccion',
                     'sobre_mi.parrafo',
                 )
                 ->where('users.uuid', $uuid)

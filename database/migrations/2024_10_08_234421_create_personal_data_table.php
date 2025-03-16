@@ -13,20 +13,25 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('personal_data', function (Blueprint $table) {
+        /* Schema::create('personal_data', function (Blueprint $table) {
             $table->id('personal_data_id');
             $table->string('uuid', 100)->unique();
-            // Definir 'user_id' como BIGINT(20)
             $table->bigInteger('user_id')->unsigned(); // BIGINT sin signo
-            $table->string('name', 50);
-            $table->string('last_name', 50);
-            $table->string('second_last_name', 50);
-            $table->string('phone', 20)->nullable();
+            $table->string('nombres', 50);
+            $table->string('apellido_paterno', 50);
+            $table->string('apellido_materno', 50)->nullable();
+            $table->string('telefono', 20)->nullable();
+            $table->string('url_img', 80)->nullable();
+            $table->date('cumpleanios')->nullable();
+            $table->string('linkedin', 100)->nullable();
+            $table->string('especialidad', 100)->nullable();
+            $table->string('cargo', 100)->nullable();
+            $table->string('direccion', 100)->nullable();
             $table->timestamps();
 
             // Agregar un índice para user_id
             $table->index('user_id');
-        });
+        }); */
     }
 
     /**

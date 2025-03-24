@@ -35,7 +35,7 @@ return new class extends Migration
             CREATE TABLE sobre_mi (
                 sobre_mi_id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
                 user_id BIGINT UNSIGNED NOT NULL,
-                parrafo VARCHAR(100) NOT NULL,
+                parrafo TEXT NOT NULL,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
                 deleted_at TIMESTAMP NULL,

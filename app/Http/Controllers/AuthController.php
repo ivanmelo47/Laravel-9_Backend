@@ -42,7 +42,7 @@ class AuthController extends Controller
 
             $user_data = DB::table('personal_data as pd')
                 ->join('users', 'pd.user_id', '=', 'users.user_id') // Join entre pd y users
-                ->select('pd.name', 'users.username', 'users.email', 'users.uuid as user_uuid', 'users.role', 'users.url_img') // Campos que quieres seleccionar
+                ->select('users.username', 'users.email', 'users.uuid as user_uuid', 'users.role', 'users.url_img') // Campos que quieres seleccionar
                 ->where('users.uuid', $user->uuid)
                 ->first();
 

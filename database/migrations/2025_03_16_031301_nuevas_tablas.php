@@ -121,14 +121,14 @@ return new class extends Migration
 
         DB::statement("
             CREATE TABLE portafolio_trabajos (
-                portafolio_id BIGINT UNSIGNED AUTO_INCREMENT PRYMARY KEY,
+                portafolio_id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
                 user_id BIGINT UNSIGNED NOT NULL,
                 url_img VARCHAR(80) NULL,
                 nombre VARCHAR(80) NOT NULL,
                 descripcion VARCHAR(80) NOT NULL,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-                deleted_at TIMESTAMP NULL
+                deleted_at TIMESTAMP NULL,
                 INDEX (user_id)
             )
         ");

@@ -37,7 +37,7 @@ class DatosGeneralesSeeder extends Seeder
             'apellido_paterno' => 'Melo',
             'apellido_materno' => 'Jaramillo',
             'telefono'      => '+52 744 118 6963',
-            'cumpleanios'   => '23-10-2000',
+            'cumpleanios'   => '2000-23-10',
             'linkedin'      => 'https://www.linkedin.com/in/josue-ivan-b510611a5/',
             'especialidad'  => 'Desarrollador Web',
             'cargo'         => 'FREELANCE',

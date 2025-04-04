@@ -95,7 +95,7 @@ return new class extends Migration
                 fin DATE NOT NULL,
                 actualmente BOOLEAN NOT NULL,
                 tipo VARCHAR(50) NOT NULL,
-                descripcion VARCHAR(100) NOT NULL,
+                descripcion TEXT NOT NULL,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
                 deleted_at TIMESTAMP NULL,

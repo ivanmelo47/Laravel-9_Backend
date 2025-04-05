@@ -12,7 +12,7 @@ class HomeController extends Controller
 {
     public function personalDataGet(Request $request)
     {
-        $uuid = '208a4b11-5eb5-484e-818a-008cc896e117';
+        $uuid = 'f8ea240f-6415-49b5-ac67-bdf6b851784f';
 
         try {
             $user = DB::table('users')
@@ -55,7 +55,7 @@ class HomeController extends Controller
 
     public function redesSocialesGet(Request $request)
     {
-        $uuid = '208a4b11-5eb5-484e-818a-008cc896e117';
+        $uuid = 'f8ea240f-6415-49b5-ac67-bdf6b851784f';
 
         try {
             $data = DB::table('users')
@@ -90,7 +90,7 @@ class HomeController extends Controller
 
     public function skillsGet(Request $request)
     {
-        $uuid = '208a4b11-5eb5-484e-818a-008cc896e117';
+        $uuid = 'f8ea240f-6415-49b5-ac67-bdf6b851784f';
 
         try {
             $data = DB::table('users')
@@ -125,7 +125,7 @@ class HomeController extends Controller
     }
     public function interesesGet(Request $request)
     {
-        $uuid = '208a4b11-5eb5-484e-818a-008cc896e117';
+        $uuid = 'f8ea240f-6415-49b5-ac67-bdf6b851784f';
 
         try {
             $data = DB::table('users')
@@ -158,7 +158,7 @@ class HomeController extends Controller
     }
 
     public function curriculumGet(Request $request){
-        $uuid = '208a4b11-5eb5-484e-818a-008cc896e117';
+        $uuid = 'f8ea240f-6415-49b5-ac67-bdf6b851784f';
 
         try {
             $data = DB::table('users')
@@ -196,7 +196,7 @@ class HomeController extends Controller
     }
 
     public function recibirMensaje(Request $request){
-        $uuid = '208a4b11-5eb5-484e-818a-008cc896e117';
+        $uuid = 'f8ea240f-6415-49b5-ac67-bdf6b851784f';
 
         try {
             $validator = Validator::make($request->all(), [

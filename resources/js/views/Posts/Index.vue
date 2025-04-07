@@ -124,6 +124,7 @@ export default {
         }
     },
     methods: {
+        // Visualizar modales
         showCreateModal() {
             this.$refs.createPostModal.show()
         },
@@ -133,6 +134,7 @@ export default {
             this.$refs.editPostModal.show(postData)
         },
 
+        //Metodos CRUD
         async createPost(formData) {
             this.isCreatingPost = true
 
@@ -172,32 +174,7 @@ export default {
             }
         },
 
-        async updateUser(formData) {
-            this.isEditingUser = true
-            try {
-                await new Promise(resolve => setTimeout(resolve, 1000))
-                this.$refs.editUserModal.hide()
-
-                Swal.fire({
-                    title: '¡Éxito!',
-                    text: 'Usuario actualizado correctamente',
-                    icon: 'success',
-                    confirmButtonText: 'Aceptar',
-                    timer: 3000
-                })
-            } catch (error) {
-                console.error('Error al actualizar usuario:', error)
-                Swal.fire({
-                    title: 'Error',
-                    text: 'Ocurrió un error al actualizar el usuario',
-                    icon: 'error',
-                    confirmButtonText: 'Aceptar'
-                })
-            } finally {
-                this.isEditingUser = false
-            }
-        },
-
+        // Acciones
         handleEdit(post) {
             this.$router.push(`/posts/${post.id}/edit`)
         },
@@ -211,6 +188,58 @@ export default {
         changePage(page) {
             this.pagination.currentPage = page
             console.log('Cambiando a página:', page)
+        },
+
+        // Métodos auxiliares
+        simulateApiCall(formData) {
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                resolve({
+                    ...formData,
+                    id: this.$refs.editPostModal.initialValues.id,
+                    lastUpdated: new Date().toISOString()
+                });
+                }, 1000);
+            });
+        },
+
+        updatePostInList(updatedPost) {
+            const index = this.posts.findIndex(p => p.id === updatedPost.id);
+            if (index === -1) throw new Error('Post no encontrado');
+            
+            this.posts.splice(index, 1, updatedPost);
+        },
+
+        closeEditModal() {
+            if (!this.$refs.editPostModal?.hide) {
+                const modalElement = document.getElementById('dynamicModal-editPost');
+                const modalInstance = modalElement ? 
+                window.bootstrap.Modal.getInstance(modalElement) : 
+                new window.bootstrap.Modal(modalElement);
+                modalInstance?.hide();
+                return;
+            }
+            this.$refs.editPostModal.hide();
+        },
+
+        showSuccessNotification(message) {
+            Swal.fire({
+                title: '¡Éxito!',
+                text: message,
+                icon: 'success',
+                confirmButtonText: 'Aceptar',
+                timer: 3000
+            });
+        },
+
+        handleUpdateError(error) {
+            console.error('Error en updatePost:', error);
+            Swal.fire({
+                title: 'Error',
+                text: error.message || 'Error al actualizar la publicación',
+                icon: 'error',
+                confirmButtonText: 'Aceptar'
+            });
         }
     }
 }

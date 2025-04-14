@@ -210,7 +210,7 @@ export default {
             this.error = null;
 
             try {
-                const payload = { user_uuid: '208a4b11-5eb5-484e-818a-008cc896e117' };
+                const payload = { user_uuid: '770eec20-4782-4807-bfd6-4e0e705c9c3d' };
                 const response = await apiService.getSocialNetworks(payload);
 
                 // Actualizar datos

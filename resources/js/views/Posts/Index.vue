@@ -7,14 +7,14 @@
             </button>
         </div>
 
-        <TableComponent 
-            :columns="columns" 
-            :data="posts" 
-            :actions="actions" 
-            :pagination="pagination"
-            @edit-post="showEditPostModal" 
-            @delete-post="handleDelete" 
-            @page-changed="changePage">
+        <TableComponent :columns="columns" :data="paginatedPosts" :actions="actions" 
+            :pagination="{
+                currentPage: pagination.currentPage,
+                totalPages: totalPages,
+                totalItems: totalItems,
+                itemsPerPage: pagination.itemsPerPage
+            }"
+            @edit-post="showEditPostModal" @delete-post="handleDelete" @page-changed="changePage">
             <template #column-status="{ row }">
                 <span :class="`badge bg-${row.status === 'published' ? 'success' : 'warning'}`">
                     {{ row.status === 'published' ? 'Publicado' : 'Borrador' }}
@@ -23,26 +23,11 @@
         </TableComponent>
 
         <!-- Modal para crear posts -->
-        <DynamicModal 
-            ref="createPostModal" 
-            modalId="createPost" 
-            title="Crear Nueva Publicación" 
-            :fields="postFields"
-            submitText="Crear Publicación"
-            size="modal-lg"
-            :loading="isCreatingPost" 
-            @submit="createPost" 
-        />
+        <DynamicModal ref="createPostModal" modalId="createPost" title="Crear Nueva Publicación" :fields="postFields"
+            submitText="Crear Publicación" size="modal-lg" :loading="isCreatingPost" @submit="createPost" />
         <!-- Modal para editar posts -->
-        <DynamicModal
-            ref="editPostModal"
-            modalId="editPost"
-            title="Editar Publicación"
-            :fields="postFields"
-            submitText="Guardar Cambios"
-            :loading="isEditingPost"
-            @submit="updatePost"
-        />
+        <DynamicModal ref="editPostModal" modalId="editPost" title="Editar Publicación" :fields="postFields"
+            submitText="Guardar Cambios" :loading="isEditingPost" @submit="updatePost" />
     </div>
 </template>
 
@@ -82,14 +67,11 @@ export default {
             ],
             posts: [
                 { id: 1, title: 'Introducción a Vue 3', author: 'Admin', status: 'published', date: '2023-10-01' },
-                { id: 2, title: 'Configuración de Laravel', author: 'Editor', status: 'published', date: '2023-10-05' },
-                { id: 3, title: 'Bootstrap 5 Tips', author: 'Admin', status: 'draft', date: '2023-10-10' }
             ],
             pagination: {
                 currentPage: 1,
-                totalPages: 5,
-                totalItems: 25,
-                itemsPerPage: 5
+                itemsPerPage: 6, // Items por página (puedes hacerlo configurable)
+                // totalPages y totalItems se calcularán dinámicamente
             },
             postFields: [
                 {
@@ -130,8 +112,17 @@ export default {
         },
         showEditPostModal(post) {
             // Convierte el post a objeto plano si es necesario
-            const postData = JSON.parse(JSON.stringify(post))
-            this.$refs.editPostModal.show(postData)
+            const postData = {
+                id: post.id, // <-- Esto es crucial
+                title: post.title,
+                author: post.author,
+                status: post.status,
+                date: post.date
+            };
+
+            //console.log('Valores Show:', postData)
+
+            this.$refs.editPostModal.show(postData);
         },
 
         //Metodos CRUD
@@ -174,6 +165,55 @@ export default {
             }
         },
 
+        async updatePost(formData) {
+            //if (!formData || typeof formData !== 'object') {
+            //    console.error('Datos del formulario inválidos');
+            //    return;
+            //}
+
+            this.isEditingPost = true;
+
+            try {
+                // 1. Validación básica
+                //if (!formData.title || !formData.author) {
+                //    throw new Error('Título y autor son campos requeridos');
+                //}
+
+                // 2. Obtener el ID del post que estamos editando
+                const postId = formData.id;
+                if (!postId) {
+                    throw new Error('No se pudo identificar el ID del post a editar');
+                }
+
+                // 3. Simular llamada API
+                const updatedPost = await this.simulateApiCall(formData);
+
+                // 4. Actualizar en el array local
+                const postIndex = this.posts.findIndex(post => post.id === postId);
+                if (postIndex === -1) {
+                    throw new Error(`No se encontró el post con ID ${postId}`);
+                }
+
+                // Actualización segura manteniendo referencia
+                this.posts.splice(postIndex, 1, {
+                    ...this.posts[postIndex], // Mantener datos no editados
+                    ...updatedPost,           // Nuevos datos
+                    id: postId                // Preservar el ID original
+                });
+
+                // 5. Cerrar modal
+                this.closeEditModal();
+
+                // 6. Notificación
+                this.showSuccessNotification('Publicación actualizada correctamente');
+
+            } catch (error) {
+                this.handleUpdateError(error);
+            } finally {
+                this.isEditingPost = false;
+            }
+        },
+
         // Acciones
         handleEdit(post) {
             this.$router.push(`/posts/${post.id}/edit`)
@@ -187,39 +227,48 @@ export default {
 
         changePage(page) {
             this.pagination.currentPage = page
-            console.log('Cambiando a página:', page)
+            //console.log('Cambiando a página:', page)
         },
 
         // Métodos auxiliares
         simulateApiCall(formData) {
             return new Promise((resolve) => {
                 setTimeout(() => {
-                resolve({
-                    ...formData,
-                    id: this.$refs.editPostModal.initialValues.id,
-                    lastUpdated: new Date().toISOString()
-                });
+                    // Devuelve los datos del formulario más metadata si es necesario
+                    resolve({
+                        ...formData,
+                        updatedAt: new Date().toISOString()
+                    });
                 }, 1000);
             });
         },
 
         updatePostInList(updatedPost) {
             const index = this.posts.findIndex(p => p.id === updatedPost.id);
-            if (index === -1) throw new Error('Post no encontrado');
-            
-            this.posts.splice(index, 1, updatedPost);
+            if (index === -1) {
+                throw new Error(`Post con ID ${updatedPost.id} no encontrado`);
+            }
+
+            // Actualización inmutable para mantener reactividad
+            this.posts = [
+                ...this.posts.slice(0, index),
+                updatedPost,
+                ...this.posts.slice(index + 1)
+            ];
         },
 
         closeEditModal() {
-            if (!this.$refs.editPostModal?.hide) {
-                const modalElement = document.getElementById('dynamicModal-editPost');
-                const modalInstance = modalElement ? 
-                window.bootstrap.Modal.getInstance(modalElement) : 
-                new window.bootstrap.Modal(modalElement);
-                modalInstance?.hide();
-                return;
+            if (this.$refs.editPostModal?.hide) {
+                this.$refs.editPostModal.hide();
+            } else {
+                // Fallback manual
+                const modalEl = document.getElementById('dynamicModal-editPost');
+                if (modalEl) {
+                    const modal = window.bootstrap.Modal.getInstance(modalEl) ||
+                        new window.bootstrap.Modal(modalEl);
+                    modal.hide();
+                }
             }
-            this.$refs.editPostModal.hide();
         },
 
         showSuccessNotification(message) {
@@ -240,6 +289,33 @@ export default {
                 icon: 'error',
                 confirmButtonText: 'Aceptar'
             });
+        }
+    },
+
+    computed: {
+        totalItems() {
+            return this.posts.length; // Calcula el total basado en tus datos
+        },
+        totalPages() {
+            return Math.ceil(this.totalItems / this.pagination.itemsPerPage);
+        },
+        paginatedPosts() {
+            const start = (this.pagination.currentPage - 1) * this.pagination.itemsPerPage;
+            const end = start + this.pagination.itemsPerPage;
+            return this.posts.slice(start, end);
+        },
+        visiblePageNumbers() {
+            const visiblePages = 5; // Número máximo de páginas a mostrar en el control
+            const half = Math.floor(visiblePages / 2);
+            let start = Math.max(1, this.pagination.currentPage - half);
+            let end = Math.min(this.totalPages, start + visiblePages - 1);
+
+            // Ajustar si estamos cerca del final
+            if (end - start + 1 < visiblePages) {
+                start = Math.max(1, end - visiblePages + 1);
+            }
+
+            return Array.from({ length: end - start + 1 }, (_, i) => start + i);
         }
     }
 }

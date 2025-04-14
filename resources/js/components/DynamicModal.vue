@@ -11,10 +11,10 @@
                         <div v-for="(field, index) in fields" :key="index" class="mb-3">
                             <label :for="'field-' + index" class="form-label">{{ field.label }}</label>
 
-                            <!-- Input de texto -->
-                            <input v-if="field.type === 'text' || field.type === 'email' || field.type === 'password'"
-                                :type="field.type" class="form-control" :id="'field-' + index"
-                                v-model="fieldValues[field.name]" :required="field.required" />
+                            <!-- Input de fecha - debe ir antes que el v-if genérico -->
+                            <input v-if="field.type === 'date' || field.type === 'datetime-local'" :type="field.type"
+                                class="form-control" :id="'field-' + index" v-model="fieldValues[field.name]"
+                                :required="field.required" :min="field.min" :max="field.max" />
 
                             <!-- Textarea -->
                             <textarea v-else-if="field.type === 'textarea'" class="form-control" :id="'field-' + index"
@@ -37,6 +37,10 @@
                                     {{ field.label }}
                                 </label>
                             </div>
+
+                            <!-- Input genérico (text, email, password) - ahora es el "else" por defecto -->
+                            <input v-else :type="field.type" class="form-control" :id="'field-' + index"
+                                v-model="fieldValues[field.name]" :required="field.required" />
                         </div>
                     </form>
                 </div>
@@ -119,7 +123,7 @@ export default {
                     ...JSON.parse(JSON.stringify(this.initialValues)),
                     ...JSON.parse(JSON.stringify(initialValues))
                 }
-                console.log('Valores iniciales:', JSON.parse(JSON.stringify(this.localInitialValues)))
+                //console.log('Valores iniciales:', JSON.parse(JSON.stringify(this.localInitialValues)))
             }
 
             this.resetForm()
@@ -146,8 +150,14 @@ export default {
             })
         },
 
-        submitForm() {
+        /* submitForm() {
             this.$emit('submit', { ...this.fieldValues })
+        } */
+        submitForm() {
+            this.$emit('submit', {
+                ...this.fieldValues,
+                id: this.localInitialValues.id // Incluir el ID en la emisión
+            });
         }
     }
 }

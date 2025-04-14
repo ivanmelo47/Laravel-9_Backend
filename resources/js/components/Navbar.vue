@@ -12,7 +12,7 @@
                             <i class="bi bi-person-circle me-1"></i> Usuario
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end">
-                            <li><router-link class="dropdown-item" to="/profile">Perfil</router-link></li>
+                            <li><router-link class="dropdown-item" to="/">Perfil</router-link></li>
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item" href="#" @click="logout">Cerrar sesión</a></li>
                         </ul>

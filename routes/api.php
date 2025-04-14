@@ -33,6 +33,12 @@ Route::prefix('v1')->group(function () {
         });
     });
 
+    // Rutas para alimentar el panel de administracion
+    Route::prefix('admin-panel')->group(function() {
+        Route::post('/redes-sociales', [HomeController::class, 'redesSocialesGet']);
+        Route::post('/redes-sociales-save', [HomeController::class,'redesSocialesSave']);
+    });
+
     // Rutas para alimentar el lading page
     Route::prefix('landing-page')->group(function () {
         // Obtener datos personales

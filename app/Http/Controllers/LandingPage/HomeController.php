@@ -12,7 +12,7 @@ class HomeController extends Controller
 {
     public function personalDataGet(Request $request)
     {
-        $uuid = 'f8ea240f-6415-49b5-ac67-bdf6b851784f';
+        $uuid = '208a4b11-5eb5-484e-818a-008cc896e117';
 
         try {
             $user = DB::table('users')
@@ -53,23 +53,26 @@ class HomeController extends Controller
         }
     }
 
+    /* CRUD Para redes sociales */
     public function redesSocialesGet(Request $request)
     {
-        $uuid = 'f8ea240f-6415-49b5-ac67-bdf6b851784f';
+        $uuid = $request['user_uuid'];
 
         try {
             $data = DB::table('users')
                 ->join('redes_sociales', 'users.user_id', '=', 'redes_sociales.user_id')
                 ->select(
+                    'redes_sociales.redes_sociales_id as id',
                     'redes_sociales.nombre',
                     'redes_sociales.url_red',
                     'redes_sociales.logo',
+                    'redes_sociales.updated_at'
                 )
                 ->whereNull('redes_sociales.deleted_at')
                 ->where('users.uuid', $uuid)
                 ->get();
 
-            return ResponseHelper::jsonResponse(true, true, 200, 'Redes sociales del Usuario', ['Redes sociales del Usuario'], $data);
+            return ResponseHelper::jsonResponse(true, true, 200, 'Redes sociales del Usuario', ['Datos cargados correctamente!'], $data);
         } catch (\Exception $e) {
             // Deshacer la transacción en caso de error
             DB::rollBack();
@@ -87,10 +90,93 @@ class HomeController extends Controller
             ], 500);
         }
     }
+    public function redesSocialesSave(Request $request)
+    {
+        $uuid = $request->input('user_uuid');
+
+        // Validar los datos de entrada
+        $validator = Validator::make($request->all(), [
+            'user_uuid' => 'required|uuid',
+            'nombre' => 'required|string|max:255',
+            'url_red' => 'required|url|max:255',
+            'logo' => 'required|string|max:255', // Asumo que el logo es una URL o nombre de archivo
+        ]);
+
+        if ($validator->fails()) {
+            return ResponseHelper::jsonResponse(
+                false,
+                false,
+                422,
+                'Error de validación',
+                $validator->errors()->all(),
+                null
+            );
+        }
+
+        DB::beginTransaction();
+
+        try {
+            // Obtener el user_id basado en el uuid
+            $user = DB::table('users')
+                ->where('uuid', $uuid)
+                ->first();
+
+            if (!$user) {
+                return ResponseHelper::jsonResponse(
+                    false,
+                    false,
+                    404,
+                    'Usuario no encontrado',
+                    ['El usuario especificado no existe'],
+                    null
+                );
+            }
+
+            // Insertar los datos en la tabla redes_sociales
+            $redSocialId = DB::table('redes_sociales')->insertGetId([
+                'nombre' => $request->input('nombre'),
+                'url_red' => $request->input('url_red'),
+                'logo' => $request->input('logo'),
+                'user_id' => $user->user_id,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+
+            // Obtener el registro recién creado
+            $redSocial = DB::table('redes_sociales')
+                ->where('redes_sociales_id', $redSocialId)
+                ->first();
+
+            DB::commit();
+
+            return ResponseHelper::jsonResponse(
+                true,
+                true,
+                201,
+                'Red social creada exitosamente',
+                ['La red social se ha guardado correctamente'],
+                $redSocial
+            );
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return response()->json([
+                'status' => false,
+                'validation' => null,
+                'code' => 500,
+                'message' => 'Error al guardar la red social',
+                'notifications' => ['Error al guardar la red social'],
+                'data' => [
+                    'error' => $e->getMessage()
+                ],
+            ], 500);
+        }
+    }
 
     public function skillsGet(Request $request)
     {
-        $uuid = 'f8ea240f-6415-49b5-ac67-bdf6b851784f';
+        $uuid = '208a4b11-5eb5-484e-818a-008cc896e117';
 
         try {
             $data = DB::table('users')
@@ -125,7 +211,7 @@ class HomeController extends Controller
     }
     public function interesesGet(Request $request)
     {
-        $uuid = 'f8ea240f-6415-49b5-ac67-bdf6b851784f';
+        $uuid = '208a4b11-5eb5-484e-818a-008cc896e117';
 
         try {
             $data = DB::table('users')
@@ -157,8 +243,9 @@ class HomeController extends Controller
         }
     }
 
-    public function curriculumGet(Request $request){
-        $uuid = 'f8ea240f-6415-49b5-ac67-bdf6b851784f';
+    public function curriculumGet(Request $request)
+    {
+        $uuid = '208a4b11-5eb5-484e-818a-008cc896e117';
 
         try {
             $data = DB::table('users')
@@ -195,8 +282,9 @@ class HomeController extends Controller
         }
     }
 
-    public function recibirMensaje(Request $request){
-        $uuid = 'f8ea240f-6415-49b5-ac67-bdf6b851784f';
+    public function recibirMensaje(Request $request)
+    {
+        $uuid = '208a4b11-5eb5-484e-818a-008cc896e117';
 
         try {
             $validator = Validator::make($request->all(), [
@@ -217,12 +305,12 @@ class HomeController extends Controller
 
             $mensaje = DB::table('mensajes_entrantes')
                 ->insertGetId([
-                    'user_id'       => $usuario->user_id,
-                    'nombre'        => $request->nombre,
-                    'telefono'      => $request->telefono,
-                    'email'         => $request->email,
-                    'tema'          => $request->tema,
-                    'mensaje'       => $request->mensaje,
+                    'user_id' => $usuario->user_id,
+                    'nombre' => $request->nombre,
+                    'telefono' => $request->telefono,
+                    'email' => $request->email,
+                    'tema' => $request->tema,
+                    'mensaje' => $request->mensaje,
                 ]);
 
             // Dividir el nombre completo en un array

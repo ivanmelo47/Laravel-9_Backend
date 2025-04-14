@@ -13,10 +13,15 @@
                     </router-link>
                 </li>
                 <li class="nav-item">
+                    <router-link class="nav-link" active-class="active" to="/redes-sociales">
+                        <i class="bi bi-globe2 me-2"></i> Redes sociales
+                    </router-link>
+                </li>
+                <!-- <li class="nav-item">
                     <router-link class="nav-link" active-class="active" to="/users" v-if="isAdmin">
                         <i class="bi bi-people me-2"></i> Usuarios
                     </router-link>
-                </li>
+                </li> -->
             </ul>
         </div>
     </div>

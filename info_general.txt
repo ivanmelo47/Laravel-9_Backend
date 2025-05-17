@@ -1,0 +1,4 @@
+Version de php 8.2.12
+Version de composer 2.8.7
+Version de Node 22.14.0
+Version de git 2.49.0
